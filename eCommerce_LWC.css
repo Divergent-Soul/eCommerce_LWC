@@ -1,0 +1,17 @@
+img{
+    height: 200px;
+    width: 510px;
+}
+p{
+    font-weight: bold;
+    font-size: 12pt;
+}
+sup{
+    font-size: 60%;
+}
+.prodName{
+    height: 80px;
+}
+.prodAmt{
+    height: 60px;
+}

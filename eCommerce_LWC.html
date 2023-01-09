@@ -1,0 +1,237 @@
+<!-- sldsValidatorIgnore -->
+<!-- sldsValidatorIgnore -->
+<!-- sldsValidatorIgnore -->
+<!-- sldsValidatorIgnore -->
+
+<template>
+
+    <div class="slds-card">
+
+        <!-- Home Page to display all the available items -->
+        <template if:true={homePage}>
+            <div class="slds-grid slds-wrap">
+                <template iterator:it={itemsList}>
+                    <div key={it.Id} class="slds-col slds-size_1-of-3" style="padding: 2%;">
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_1-of-2" style="padding: 2%;">
+                                <img src={it.value.imgURL__c} alt="">
+                            </div>
+                            <div class="slds-col slds-size_1-of-2" style="padding: 2%;">
+                                <div class="slds-grid slds-grid_vertical">
+                                    <div class="slds-col">
+                                        <p class="prodName">{it.value.itemName__c}</p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <p class="prodAmt">&#8377; {it.value.Amount__c}<sup>00</sup></p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <lightning-button name={it.value.Id} style="float: right;" variant="brand" label="View" onclick={viewItem} class="slds-m-left_x-small"></lightning-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- View Page to display the details of the individual item -->
+        <template if:true={viewPage}>
+            <div>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <img src={currentItem.imgURL__c} class="slds-align_absolute-center" style="height: 510px; width: 440px" alt="">
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <div class="slds-grid slds-grid_vertical">
+                            <div class="slds-col">
+                                <p style="font-size: 40px; height: fit-content;">{currentItem.itemName__c}</p>
+                            </div>
+                            <div class="slds-col">
+                                <p style="height: 250px;">{currentItem.itemDescription__c}</p>
+                            </div>
+                            <div class="slds-col">
+                                <p style="height:fit-content; font-size: 35px;"><s style="font-size: 25px;">&#8377;{currentOriginalPrice}</s>&nbsp;&#8377; {currentItem.Amount__c}<sup>00</sup></p>
+                            </div>
+                            <div class="slds-col" style="height: 80px;">
+                                
+                            </div>
+                            <div class="slds-col">
+                                <lightning-slider label="Quantity" min="1" max="10" value={quantity}></lightning-slider>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <lightning-button style="float: right;" variant="Neutral" label="Cancel" onclick={handleCancel} class="slds-m-left_x-small"></lightning-button>  
+                        <lightning-button style="float: right;" variant="brand" label="Buy Now" onclick={buyNowHandle} class="slds-m-left_x-small"></lightning-button>  
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Buy Now Page to get address details from the user -->
+        <template if:true={buyPage}>
+            <div>
+                <div style="margin-top: 1%; margin-left: 1%;">
+                    <lightning-button-icon icon-name="utility:back"  alternative-text="Go Back" title="Back" onclick={handleBack}></lightning-button-icon>
+                </div>
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <label for="html" style="font-weight: bold;">Billing Address</label>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <label for="html" style="font-weight: bold;">Shipping Address</label>
+                        <lightning-input data-id="checkbox" type="checkbox" checked={shipAdd} onchange={handleCheckboxChange} label="Same as Billing Address" name="input1" ></lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <lightning-input-name data-id="billingname" onblur={addressOnblur} options={salutationOptions} first-name="" last-name=""></lightning-input-name>
+                        <lightning-input-address data-id="billing"
+                            address-label="Address"
+                            street-label="Street"
+                            city-label="City"
+                            country-label="Country"
+                            province-label="Province"
+                            postal-code-label="PostalCode"
+                            required 
+                            onblur={addressOnblur}></lightning-input-address>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <div>
+                            <lightning-input-name data-id="shippingname" disabled={shipAdd} options={salutationOptions} first-name="" last-name=""></lightning-input-name>
+                            <lightning-input-address data-id="shipping"
+                                address-label="Address"
+                                street-label="Street"
+                                city-label="City"
+                                country-label="Country"
+                                province-label="Province"
+                                postal-code-label="PostalCode"
+                                disabled={shipAdd} ></lightning-input-address>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        <lightning-input type="checkbox" label="Order contains gift?" data-id="gift" onchange={giftonchange}></lightning-input>
+                        <template if:true={gift}>
+                            <lightning-textarea name="Gift Message" label="Gift Message" ></lightning-textarea>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%; padding-left: 250px; text-align-last: justify; padding-right: 120px;">
+                        <label for="html">Quantity: </label>{quantity}<br/>
+                        <label for="html">Amount: </label>  {currentItem.Amount__c}<br/>
+                        <label for="html">Tax: </label>     18%<br/>
+                        <p><label for="html">Total: </label>   {TotalAmt}</p>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%;">
+                        
+                    </div>
+                    <div class="slds-col slds-size_1-of-2" style="padding: 1%; padding-right: 120px;">
+                        <lightning-button style="float: right; " variant="brand" label="Check Out" onclick={handleCheckOut} class="slds-m-left_x-small"></lightning-button>        
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!--Check out page to get payment method and card details and confirm OTP-->
+        <template if:true={checkOutPage}>
+            <div style="margin: 2%;">
+                <div class="slds-grid">
+
+                    <div class="slds-col slds-align_absolute-center">
+                        <div style="position: absolute; left: 15px; top: 15px;">
+                            <lightning-button-icon icon-name="utility:close" alternative-text="Close" onclick={handleCancel}></lightning-button-icon>
+                        </div>
+                        <div>
+                            <lightning-radio-group name="radioGroup" data-id="paymentMode" 
+                                label="Payment Mothods"
+                                options={optionsPayMode}
+                                type="radio"
+                                onchange={handlePaymentMethod}></lightning-radio-group>
+                        </div>
+                    </div>
+                    
+                    <template if:true={div2}>
+                        <div class="slds-col slds-size_1-of-2">
+                            
+                            <template if:true={cardmode}>
+                                <div style="padding: 2%;">
+                                    <lightning-input type="email" data-id="email" label="Email address"></lightning-input>
+                                </div>
+                                <div style="padding: 2%;">
+                                    <lightning-input type="number" label="Card Number" data-id="card" max-length="16" onblur={getCardType}></lightning-input> {cardType}
+                                </div>
+                                <div>
+                                    <div class="slds-grid">
+                                        <div class="slds-col slds-size_1-of-2" style="padding: 2%;">
+                                            <lightning-combobox
+                                                name="month"
+                                                label="Month"
+                                                placeholder="Select Month"
+                                                options={optionsMon}
+                                                value={valueMon}
+                                                data-id="month"
+                                                onchange={monthChange}></lightning-combobox>
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-2" style="padding: 2%;">
+                                            <lightning-combobox
+                                                name="year"
+                                                label="Year"
+                                                placeholder="Select Year"
+                                                options={optionsYear}
+                                                value={valueYear}
+                                                data-id="year"
+                                                onchange={yearChange}></lightning-combobox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin: 1%;">
+                                    <lightning-button variant="brand" label="Send OTP" data-id="sendotp" onclick={handleSendOTP} class="slds-m-left_x-small"></lightning-button>
+                                </div>
+                                <template if:true={OTPTruthy}>
+                                    <div style="margin: 2%;">
+                                        <lightning-input type="text" label="OTP" data-id="otp" max-length="6"></lightning-input>
+                                    </div>
+                                    <div style="margin: 2%;">
+                                        <lightning-button style="float: right;" variant="brand" label="Pay Now" onclick={handlePayNow} class="slds-m-left_x-small"></lightning-button>
+                                    </div>
+                                </template>
+                            </template>
+
+                            <template if:true={upimode}>
+                                <div>
+                                    <div style="margin-top: 2%; text-align: center; font-size: 20pt; font-weight: bolder;">
+                                        UPI Payment
+                                    </div>
+                                    <div style="margin-top: 2%;" class="slds-align_absolute-center">
+                                        <img src={qrCodeUrl} alt="" style="height: 300px; width: 300px;">
+                                    </div>
+                                    <div style="margin-top: 2%; text-align: center; font-size: 16pt; font-weight: 500;">
+                                        Scan and pay with any BHIM UPI app
+                                    </div>
+                                    <div class="slds-align_absolute-center">
+                                        <img src="/resource/upi" alt="">
+                                    </div>
+                                </div>
+
+                                <div class="slds-align_absolute-center">
+                                </div>
+                            </template>
+
+                        </div>
+                    </template>
+
+                    
+                </div>
+            </div>
+        </template>
+
+
+    </div>
+</template>
